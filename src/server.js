@@ -4,6 +4,7 @@ import morgan from 'morgan'
 import cors from 'cors'
 
 export const app = express()
+const router = express.Router()
 
 app.disable('x-powered-by')
 
@@ -24,6 +25,22 @@ const localMiddleware = (req, res, next) => {
   console.log('Local middleware active')
   next()
 }
+
+// Using a router to isolate different routes and their http verbs
+router
+  .route('/user')
+  .get()
+  .post()
+
+router
+  .route('/user/:id')
+  .get()
+  .post()
+  .put()
+  .delete()
+
+// Plugs the middleware in
+app.use('/api', router)
 
 app.get('/', (req, res) => {
   res.send(`<h1>Hello!${req.favNumber}</h1>`)
