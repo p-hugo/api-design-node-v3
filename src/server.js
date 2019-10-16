@@ -12,11 +12,24 @@ app.use(json())
 app.use(urlencoded({ extended: true }))
 app.use(morgan('dev'))
 
-app.get('/', (req, res) => {
-  res.send('<h1>Hello!</h1>')
+// Creating custom middleware
+app.use((req, res, next) => {
+  console.log('Global middleware active')
+  req.favNumber = 47 // favNumber then becomes visible in all routes
+  next() // passing a parameter will trigger an error
 })
 
-app.post('/api/:v', (req, res) => {
+// Can use it in individual routes instead of all routes
+const localMiddleware = (req, res, next) => {
+  console.log('Local middleware active')
+  next()
+}
+
+app.get('/', (req, res) => {
+  res.send(`<h1>Hello!${req.favNumber}</h1>`)
+})
+
+app.post('/api/:v', localMiddleware, (req, res) => {
   res.send({ body: req.body, params: req.params })
 })
 
